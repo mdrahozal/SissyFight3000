@@ -1,4 +1,4 @@
-% co-authored by Matthew Drahozal, James Clemer
+% co-authored by Matthew Drahozal, James Clemer, Jeannie Tran
 % Consultancy: Cait Hakala, on the nature of Bitchiness
 % 10 self-esteem points
 % 1. public communication
@@ -10,7 +10,10 @@
 
 % representing social momentum
 % there's always this one girl no matter the social group, that everyone wants to be friends with. People are constantly fighting for the top girl, no matter her worth as a prize.
-% some girls turn bitchy, some do not
+% some girls turn bitchy, some do not- quoth Caitlin Hakala
+:- discontiguous(agent/1, self_esteem/2, current_action/2).
+:- dynamic self_esteem/2.
+
 
 agent(veronicaMars).
 self_esteem(veronicaMars, 25).
@@ -64,8 +67,16 @@ execute_turn([Agent:Action|Tail]):-
 	call(Action),
 	execute_turn(Tail).
 
+initialize:-
+  retract(self_esteem(_, _)),
+  findall(Gossip, agent(Gossip), Agents),
+  maplist(assert(self_esteem(
 
-
+run_turn(Name, SelfEsteem):-
+  findall(Gossip, agent(Gossip), Agents),
+  generate_action_list(ActionList, Agents),
+  execute_turn(ActionList),
+  self_esteem(Name, SelfEsteem).
 
 choose_action(Agent, attack(Agent, regina)).
 %%	obviously this will be more fully-fledged
@@ -82,7 +93,8 @@ attack(Assailant, Victim):-
   (   current_action(Victim, defend) ->
          New is Num - 1/2;
     New is Num - 1),
-  update(self_esteem(Victim, Num), self_esteem(Victim, New)).
+  retract(self_esteem(Victim, Num)),
+  assertz(self_esteem(Victim, New)).
 
 
 
