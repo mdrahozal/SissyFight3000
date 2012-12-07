@@ -70,23 +70,20 @@ execute_turn([Agent:Action|Tail]):-
 initialize:-
   retract(self_esteem(_, _)),
   findall(Gossip, agent(Gossip), Agents),
-  maplist(assert(self_esteem(
+  maplist(assert(self_esteem(Agent, 10)), Agents).
 
-run_turn(Name, SelfEsteem):-
-  findall(Gossip, agent(Gossip), Agents),
+run_turn:-
+  bagof(Gossip, agent(Gossip), Agents),
   generate_action_list(ActionList, Agents),
-  execute_turn(ActionList),
-  self_esteem(Name, SelfEsteem).
+  execute_turn(ActionList).
+  
 
-choose_action(Agent, attack(Agent, regina)).
+choose_action(Agent, group_attack(Agent, regina)).
 %%	obviously this will be more fully-fledged
 %       but that's kind of the crux of the game
 %	so i'm postponing it for now
 
 current_action(regina, defend).
-
-
-
 
 attack(Assailant, Victim):-
   self_esteem(Assailant, _), self_esteem(Victim, Num),
@@ -96,7 +93,17 @@ attack(Assailant, Victim):-
   retract(self_esteem(Victim, Num)),
   assertz(self_esteem(Victim, New)).
 
-
+group_attack(Assailant, Victim):-
+  findall(Aggressor, current_action(Aggressor, group_attack(Aggressor, Victim)), Pack),
+  self_esteem(Assailant, X),
+  self_esteem(Victim, Y),
+  ( length(Pack, 1) -> NewX is X - 1,
+    retract(self_esteem(Assailant, X)),
+    assertz(self_esteem(Assailant, NewX))
+  );
+  ( length(Pack, Z) -> NewY is (Y - (2 * Z)),
+    retract(self_esteem(Victim, Y)),
+    assertz(self_esteem(Victim, NewY))).
 
 %% affinity(+Person, -AffinityLevel)
 % True if SelfEsteem is the amount this character likes themselves.
