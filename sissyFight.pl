@@ -14,7 +14,6 @@
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic self_esteem/2.
 
-
 agent(veronicaMars).
 self_esteem(veronicaMars, 25).
 current_action(veronicaMars, default).
@@ -63,7 +62,7 @@ generate_action_list(Action_List, [Agent|Rest_Agents]):-
 	generate_action_list(Rest_Actions, Rest_Agents).
 
 execute_turn([], State, State).
-execute_turn([Agent:Action|Tail]):-
+execute_turn([Agent:Action|Tail], Old, New):-
 	call(Action),
 	execute_turn(Tail).
 
@@ -99,11 +98,11 @@ group_attack(Assailant, Victim):-
   self_esteem(Victim, Y),
   ( length(Pack, 1) -> NewX is X - 1,
     retract(self_esteem(Assailant, X)),
-    assertz(self_esteem(Assailant, NewX))
+    asserta(self_esteem(Assailant, NewX))
   );
-  ( length(Pack, Z) -> NewY is (Y - (2 * Z)),
+  ( (length(Pack, Z), Z > 2) -> NewY is Y - 2,
     retract(self_esteem(Victim, Y)),
-    assertz(self_esteem(Victim, NewY))).
+    asserta(self_esteem(Victim, NewY))).
 
 %% affinity(+Person, -AffinityLevel)
 % True if SelfEsteem is the amount this character likes themselves.
