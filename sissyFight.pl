@@ -61,8 +61,8 @@ generate_action_list(Action_List, [Agent|Rest_Agents]):-
 	choose_action(Agent, Action),
 	generate_action_list(Rest_Actions, Rest_Agents).
 
-execute_turn([], State, State).
-execute_turn([Agent:Action|Tail], Old, New):-
+execute_turn([]).
+execute_turn([Agent:Action|Tail]):-
 	call(Action),
 	execute_turn(Tail).
 
@@ -75,9 +75,8 @@ run_turn:-
   bagof(Gossip, agent(Gossip), Agents),
   generate_action_list(ActionList, Agents),
   execute_turn(ActionList).
-  
 
-choose_action(Agent, group_attack(Agent, regina)).
+choose_action(Agent, attack(Agent, regina)).
 %%	obviously this will be more fully-fledged
 %       but that's kind of the crux of the game
 %	so i'm postponing it for now
@@ -97,11 +96,11 @@ group_attack(Assailant, Victim):-
   self_esteem(Assailant, X),
   self_esteem(Victim, Y),
   ( length(Pack, 1) -> NewX is X - 1,
-    retract(self_esteem(Assailant, X)),
+    retractall(self_esteem(Assailant, _)),
     asserta(self_esteem(Assailant, NewX))
   );
   ( (length(Pack, Z), Z > 2) -> NewY is Y - 2,
-    retract(self_esteem(Victim, Y)),
+    retractall(self_esteem(Victim, _)),
     asserta(self_esteem(Victim, NewY))).
 
 %% affinity(+Person, -AffinityLevel)
