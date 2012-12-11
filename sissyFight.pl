@@ -68,7 +68,9 @@ execute_turn([Agent:Action|Tail]):-
 	execute_turn(Tail).
 
 initialize:-
-  retract(self_esteem(_, _)),
+  retractall(self_esteem(_, _)),
+  retractall(agent(_)),
+  retractall(current_action(_, _),
   findall(Gossip, agent(Gossip), Agents),
   maplist(assert(self_esteem(Agent, 10)), Agents).
 
