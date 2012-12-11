@@ -13,6 +13,7 @@
 % some girls turn bitchy, some do not- quoth Caitlin Hakala
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic self_esteem/2.
+:-dynamic current_action/2.
 
 agent(veronicaMars).
 self_esteem(veronicaMars, 25).
@@ -76,7 +77,10 @@ run_turn:-
   generate_action_list(ActionList, Agents),
   execute_turn(ActionList).
 
-choose_action(Agent, attack(Agent, regina)).
+
+choose_action(Agent, group_attack(Agent, regina)):-
+	retract(current_action(Agent,_)),
+	assertz(current_action(Agent, group_attack(Agent, regina))).
 %%	obviously this will be more fully-fledged
 %       but that's kind of the crux of the game
 %	so i'm postponing it for now
@@ -95,13 +99,15 @@ group_attack(Assailant, Victim):-
   findall(Aggressor, current_action(Aggressor, group_attack(Aggressor, Victim)), Pack),
   self_esteem(Assailant, X),
   self_esteem(Victim, Y),
-  ( length(Pack, 1) -> NewX is X - 1,
-    retractall(self_esteem(Assailant, _)),
-    asserta(self_esteem(Assailant, NewX))
-  );
-  ( (length(Pack, Z), Z > 2) -> NewY is Y - 2,
-    retractall(self_esteem(Victim, _)),
-    asserta(self_esteem(Victim, NewY))).
+  length(Pack, Length),
+  ( Length = 1 ->
+  (   NewX is X - 1,
+      retract(self_esteem(Assailant, X)),
+      asserta(self_esteem(Assailant, NewX)));
+  ( Length > 1 ->
+  (   NewY is Y - 2,
+      retract(self_esteem(Victim, Y)),
+      asserta(self_esteem(Victim, NewY))))).
 
 %% affinity(+Person, -AffinityLevel)
 % True if SelfEsteem is the amount this character likes themselves.
