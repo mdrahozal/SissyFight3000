@@ -12,7 +12,8 @@
 % there's always this one girl no matter the social group, that everyone wants to be friends with. People are constantly fighting for the top girl, no matter her worth as a prize.
 % some girls turn bitchy, some do not- quoth Caitlin Hakala
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
-:- dynamic (agent/1, self_esteem/2, current_action/2).
+:- dynamic (agent/1, self_esteem/2, current_action/2, expectsBecause/3).
+
 
 
 initialize:-
@@ -100,12 +101,20 @@ choose_action(Agent, group_attack(Agent, regina)):-
 %	so i'm postponing it for now
 
 
+generate_communication_list([], []).
+generate_communication_list(Communiques, [Agent|Rest_Agents]):-
+ append([Agent:Communique], Rest_Communiques, Communiques),
+ choose_communication(Agent, Communique),
+ generate_communication_list(Rest_Communiques, Rest_Agents).
+
 % tell an audience of 1+ members that a proposition will happen.
 % the audience then knows to watch for its veracity
 tell(Testifier, Audience, Proposition):-
-  maplist(addToWatchList(Testifier, Proposition), Audience).
+  maplist(addExpectation(Testifier, Proposition), Audience).
 
-addToWatchList(
+% expects(Testifier, Proposition, Agent).
+addExpectation(Testifier, Proposition, Audience):-
+  assert(expectsBecause(Audience, Proposition, Testifier)).
 
 attack(Assailant, Victim):-
   self_esteem(Assailant, _), self_esteem(Victim, Num),
