@@ -14,16 +14,6 @@
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic (agent/1, self_esteem/2, current_action/2).
 
-generate_action_list([],[]).
-generate_action_list(Action_List, [Agent|Rest_Agents]):-
-	append([Agent:Action], Rest_Actions, Action_List),
-	choose_action(Agent, Action),
-	generate_action_list(Rest_Actions, Rest_Agents).
-
-execute_turn([]).
-execute_turn([Agent:Action|Tail]):-
-	call(Action),
-	execute_turn(Tail).
 
 initialize:-
   retractall(self_esteem(_, _)),
@@ -63,10 +53,11 @@ agent(heather_mcnamara),
   ]).
 
 run_turn:-
-  bagof(Gossip, agent(Gossip), Agents),
+  bagof(Agent, agent(Agent), Agents),
+  run_communications(Agents),
   generate_action_list(ActionList, Agents),
-  (maybe_kill(Agents); true),
   execute_turn(ActionList),
+  (maybe_kill(Agents); true),
   (maybe_win(Agents); true).
 
 maybe_win([AgentH|AgentT]):-
@@ -75,6 +66,16 @@ maybe_win([AgentH|AgentT]):-
 maybe_win([]):-
   print("GAME OVER! YOU ALL LOSE! THIS IS WHY WE CAN'T HAVE NICE THINGS!").
 
+generate_action_list([],[]).
+generate_action_list(Action_List, [Agent|Rest_Agents]):-
+	append([Agent:Action], Rest_Actions, Action_List),
+	choose_action(Agent, Action),
+	generate_action_list(Rest_Actions, Rest_Agents).
+
+execute_turn([]).
+execute_turn([Agent:Action|Tail]):-
+	call(Action),
+	execute_turn(Tail).
 % Agents with 0 health DIE. or CHANGE SKOOLS.
 % OR SOMETHING!
 % BUT THEY TOTALLY LOSE!
