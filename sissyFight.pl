@@ -14,47 +14,6 @@
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic (agent/1, self_esteem/2, current_action/2).
 
-/*agent(veronicaMars).
-self_esteem(veronicaMars, 25).
-current_action(veronicaMars, default).
-
-agent(cady).
-self_esteem(cady, 10).
-current_action(cady, default).
-
-agent(regina).
-self_esteem(regina, 10).
-current_action(regina, default).
-
-agent(janis).
-self_esteem(janis, 10).
-current_action(janis, default).
-
-agent(karen).
-self_esteem(karen,10).
-current_action(karen, default).
-
-agent(sharon).
-self_esteem(sharon, 10).
-current_action(sharon, default).
-
-agent(veronica).
-self_esteem(veronica, 10).
-current_action(veronica, default).
-
-agent(heather_duke).
-self_esteem(heather_duke, 10).
-current_action(heather_duke, default).
-
-agent(heather_chandler).
-self_esteem(heather_chandler, 10).
-current_action(heather_chandler, default).
-
-agent(heather_mcnamara).
-self_esteem(heather_mcnamara, 10).
-current_action(heather_mcnamara, default).
-*/
-
 generate_action_list([],[]).
 generate_action_list(Action_List, [Agent|Rest_Agents]):-
 	append([Agent:Action], Rest_Actions, Action_List),
@@ -107,8 +66,15 @@ agent(heather_mcnamara),
 run_turn:-
   bagof(Gossip, agent(Gossip), Agents),
   generate_action_list(ActionList, Agents),
-  (maybe_kill(Agents);true),
-  execute_turn(ActionList).
+  (maybe_kill(Agents); true),
+  execute_turn(ActionList),
+  (maybe_win(Agents); true).
+
+maybe_win([AgentH|AgentT]):-
+  length([AgentH|AgentT], 1) -> print("GAME OVER! THE WINNER IS ~w", AgentH).
+
+maybe_win([]):-
+  print("GAME OVER! YOU ALL LOSE! THIS IS WHY WE CAN'T HAVE NICE THINGS!").
 
 % Agents with 0 health DIE. or CHANGE SKOOLS.
 % OR SOMETHING!
