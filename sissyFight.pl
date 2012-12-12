@@ -14,7 +14,7 @@
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic (agent/1, self_esteem/2, current_action/2, expectsBecause/3).
 
-
+:-use_module("acts.pl", "communication.pl").
 
 initialize:-
   retractall(self_esteem(_, _)),
@@ -68,12 +68,6 @@ maybe_win([AgentH|AgentT]):-
 maybe_win([]):-
   print("GAME OVER! YOU ALL LOSE! THIS IS WHY WE CAN'T HAVE NICE THINGS!").
 
-generate_action_list([],[]).
-generate_action_list(Action_List, [Agent|Rest_Agents]):-
-	append([Agent:Action], Rest_Actions, Action_List),
-	choose_action(Agent, Action),
-	generate_action_list(Rest_Actions, Rest_Agents).
-
 execute_turn([]).
 execute_turn([Agent:Action|Tail]):-
 	call(Action),
@@ -92,64 +86,3 @@ maybe_kill(Agent):-
               retract(self_esteem(Agent, _)),
               retract(current_action(Agent, _))).
 
-choose_action(Agent, group_attack(Agent, regina)):-
-  % Communicate
-	retract(current_action(Agent,_)),
-	assertz(current_action(Agent, group_attack(Agent, regina))).
-%%	obviously this will be more fully-fledged
-%       but that's kind of the crux of the game
-%	so i'm postponing it for now
-
-
-generate_communication_list([], []).
-generate_communication_list(Communiques, [Agent|Rest_Agents]):-
- append([Agent:Communique], Rest_Communiques, Communiques),
- choose_communication(Agent, Communique),
- generate_communication_list(Rest_Communiques, Rest_Agents).
-
-% tell an audience of 1+ members that a proposition will happen.
-% the audience then knows to watch for its veracity
-tell(Testifier, Audience, Proposition):-
-  maplist(addExpectation(Testifier, Proposition), Audience).
-
-% expects(Testifier, Proposition, Agent).
-addExpectation(Testifier, Proposition, Audience):-
-  assert(expectsBecause(Audience, Proposition, Testifier)).
-
-attack(Assailant, Victim):-
-  self_esteem(Assailant, _), self_esteem(Victim, Num),
-  (   current_action(Victim, defend) ->
-         New is Num - 1/2;
-    New is Num - 1),
-  retract(self_esteem(Victim, Num)),
-  assertz(self_esteem(Victim, New)).
-
-group_attack(Assailant, Victim):-
-  findall(Aggressor, current_action(Aggressor, group_attack(Aggressor, Victim)), Pack),
-  self_esteem(Assailant, X),
-  self_esteem(Victim, Y),
-  length(Pack, Length),
-  ( Length = 1 ->
-  (   NewX is X - 2,
-      retract(self_esteem(Assailant, X)),
-      asserta(self_esteem(Assailant, NewX)));
-  ( Length > 1 ->
-    (current_action(Victim, defend) -> Delta is 1; Delta is 2),
-    (   NewY is Y - Delta,
-      retract(self_esteem(Victim, Y)),
-      asserta(self_esteem(Victim, NewY))))).
-
-%% affinity(+Person, -AffinityLevel)
-% True if SelfEsteem is the amount this character likes themselves.
-:- public affinity/2.
-affinity(Person, SelfEsteem) :-
-	random_float(0, 1, SelfEsteem),
-	asserta((affinity(Person, SelfEsteem):- !)),
-	!.
-
-:- public set_affinity/2.
-set_affinity(Person,Level) :-
-	person(Person),
-	(retract(affinity(Person, _)) ; true),
-	asserta((affinity(Person, Level):- !)),
-	!.
