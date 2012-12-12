@@ -22,9 +22,9 @@ initialize:-
   retractall(agent(_)),
   retractall(current_action(_, _)),
   maplist(assert,
-[agent(veronicaMars),
+[/*agent(veronicaMars),
   self_esteem(veronicaMars, 25),
-  current_action(veronicaMars, default),
+  current_action(veronicaMars, default),*/
 agent(cady),
   self_esteem(cady, 10),
   current_action(cady, default),

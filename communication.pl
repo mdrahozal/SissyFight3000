@@ -1,8 +1,20 @@
+/*
+  The code for communicating in SF3K
+  communications set up an expectation
+  if the expectation is met, trust should rise
+  if not, trust should fall
+  trust determines whether or not an expectation is taken into account in 
+  choosing actions.
+
+*/
+
+
+% reason about who each agent should communicate with, and what they should communicate.
 generate_communication_list([], []).
 generate_communication_list(Communiques, [Agent|Rest_Agents]):-
- append([Agent:Communique], Rest_Communiques, Communiques),
- choose_communication(Agent, Communique),
- generate_communication_list(Rest_Communiques, Rest_Agents).
+  append([Agent:Communique], Rest_Communiques, Communiques),
+  choose_communication(Agent, Communique),
+  generate_communication_list(Rest_Communiques, Rest_Agents).
 
 % tell an audience of 1+ members that a proposition will happen.
 % the audience then knows to watch for its veracity
@@ -11,19 +23,5 @@ tell(Testifier, Audience, Proposition):-
 
 % expects(Testifier, Proposition, Agent).
 addExpectation(Testifier, Proposition, Audience):-
-  assert(expectsBecause(Audience, Proposition, Testifier)).
+  assert(expectsFrom(Audience, Proposition, Testifier)).
 
-%% affinity(+Person, -AffinityLevel)
-% True if SelfEsteem is the amount this character likes themselves.
-:- public affinity/2.
-affinity(Person, SelfEsteem) :-
-	random_float(0, 1, SelfEsteem),
-	asserta((affinity(Person, SelfEsteem):- !)),
-	!.
-
-:- public set_affinity/2.
-set_affinity(Person,Level) :-
-	person(Person),
-	(retract(affinity(Person, _)) ; true),
-	asserta((affinity(Person, Level):- !)),
-	!.

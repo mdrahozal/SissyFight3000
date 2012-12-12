@@ -1,3 +1,8 @@
+/* the code for generating and executing 'physical' acts in the SF3K world.
+   namely, the code for attacking, group attacking, defending, and deciding which to do.
+   NOTE: defend does not need code, as it's practically inert.
+*/
+
 generate_action_list([],[]).
 generate_action_list(Action_List, [Agent|Rest_Agents]):-
 	append([Agent:Action], Rest_Actions, Action_List),
