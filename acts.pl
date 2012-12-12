@@ -10,14 +10,10 @@ generate_action_list(Action_List, [Agent|Rest_Agents]):-
 	generate_action_list(Rest_Actions, Rest_Agents).
 
 choose_action(Agent, group_attack(Agent, regina)):-
-  % Communicate
 	retract(current_action(Agent,_)),
+        bagof(Agent, agent(Agent), Agents),
+        
 	assertz(current_action(Agent, group_attack(Agent, regina))).
-%%	obviously this will be more fully-fledged
-%       but that's kind of the crux of the game
-%	so i'm postponing it for now
-
-
 
 attack(Assailant, Victim):-
   self_esteem(Assailant, _), self_esteem(Victim, Num),
