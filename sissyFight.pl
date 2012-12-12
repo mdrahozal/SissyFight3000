@@ -109,7 +109,6 @@ run_turn:-
   generate_action_list(ActionList, Agents),
   execute_turn(ActionList).
 
-
 choose_action(Agent, group_attack(Agent, regina)):-
 	retract(current_action(Agent,_)),
 	assertz(current_action(Agent, group_attack(Agent, regina))).
@@ -117,7 +116,6 @@ choose_action(Agent, group_attack(Agent, regina)):-
 %       but that's kind of the crux of the game
 %	so i'm postponing it for now
 
-current_action(regina, defend).
 
 attack(Assailant, Victim):-
   self_esteem(Assailant, _), self_esteem(Victim, Num),
@@ -133,11 +131,12 @@ group_attack(Assailant, Victim):-
   self_esteem(Victim, Y),
   length(Pack, Length),
   ( Length = 1 ->
-  (   NewX is X - 1,
+  (   NewX is X - 2,
       retract(self_esteem(Assailant, X)),
       asserta(self_esteem(Assailant, NewX)));
   ( Length > 1 ->
-  (   NewY is Y - 2,
+    (current_action(Victim, defend) -> Delta is 1; Delta is 2),
+    (   NewY is Y - Delta,
       retract(self_esteem(Victim, Y)),
       asserta(self_esteem(Victim, NewY))))).
 
