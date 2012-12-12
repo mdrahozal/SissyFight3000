@@ -12,10 +12,9 @@
 % there's always this one girl no matter the social group, that everyone wants to be friends with. People are constantly fighting for the top girl, no matter her worth as a prize.
 % some girls turn bitchy, some do not- quoth Caitlin Hakala
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
-:- dynamic self_esteem/2.
-:-dynamic current_action/2.
+:- dynamic (agent/1, self_esteem/2, current_action/2).
 
-agent(veronicaMars).
+/*agent(veronicaMars).
 self_esteem(veronicaMars, 25).
 current_action(veronicaMars, default).
 
@@ -54,7 +53,7 @@ current_action(heather_chandler, default).
 agent(heather_mcnamara).
 self_esteem(heather_mcnamara, 10).
 current_action(heather_mcnamara, default).
-
+*/
 
 generate_action_list([],[]).
 generate_action_list(Action_List, [Agent|Rest_Agents]):-
@@ -70,9 +69,40 @@ execute_turn([Agent:Action|Tail]):-
 initialize:-
   retractall(self_esteem(_, _)),
   retractall(agent(_)),
-  retractall(current_action(_, _),
-  findall(Gossip, agent(Gossip), Agents),
-  maplist(assert(self_esteem(Agent, 10)), Agents).
+  retractall(current_action(_, _)),
+  maplist(assert,
+[agent(veronicaMars),
+  self_esteem(veronicaMars, 25),
+  current_action(veronicaMars, default),
+agent(cady),
+  self_esteem(cady, 10),
+  current_action(cady, default),
+agent(regina),
+  self_esteem(regina, 10),
+  current_action(regina, default),
+agent(janis),
+  self_esteem(janis, 10),
+  current_action(janis, default),
+agent(karen),
+  self_esteem(karen,10),
+  current_action(karen, default),
+agent(sharon),
+  self_esteem(sharon, 10),
+  current_action(sharon, default),
+agent(veronica),
+  self_esteem(veronica, 10),
+  current_action(veronica, default),
+agent(heather_duke),
+  self_esteem(heather_duke, 10),
+  current_action(heather_duke, default),
+agent(heather_chandler),
+  self_esteem(heather_chandler, 10),
+  current_action(heather_chandler, default),
+agent(heather_mcnamara),
+  self_esteem(heather_mcnamara, 10),
+  current_action(heather_mcnamara, default)
+  ]).
+
 
 run_turn:-
   bagof(Gossip, agent(Gossip), Agents),
