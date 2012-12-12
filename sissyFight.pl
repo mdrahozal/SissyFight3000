@@ -11,10 +11,11 @@
 % representing social momentum
 % there's always this one girl no matter the social group, that everyone wants to be friends with. People are constantly fighting for the top girl, no matter her worth as a prize.
 % some girls turn bitchy, some do not- quoth Caitlin Hakala
+:-include('acts.pl').
+:-include('communication.pl').
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic (agent/1, self_esteem/2, current_action/2, expectsBecause/3).
 
-:-include("acts.pl", "communication.pl").
 
 initialize:-
   retractall(self_esteem(_, _)),
@@ -51,7 +52,18 @@ agent(heather_chandler),
 agent(heather_mcnamara),
   self_esteem(heather_mcnamara, 10),
   current_action(heather_mcnamara, default)
-  ]).
+  ]),
+  bagof(Agent, agent(Agent), Agents),
+  maplist(allStartingTrust, Agents).
+
+startingTrust(Agent, Other):-
+  random(0, 100, Num),
+  retractall(trust(Agent, Other, _)),
+  assert(trust(Agent, Other, Num)).
+
+allStartingTrust(Agent):-
+  bagof(Other, (agent(Other), Other \= Agent), Others),
+  maplist(startingTrust(Agent), Others).
 
 run_turn:-
   bagof(Agent, agent(Agent), Agents),
