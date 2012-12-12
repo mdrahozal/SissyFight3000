@@ -62,7 +62,6 @@ agent(heather_mcnamara),
   current_action(heather_mcnamara, default)
   ]).
 
-
 run_turn:-
   bagof(Gossip, agent(Gossip), Agents),
   generate_action_list(ActionList, Agents),
@@ -90,6 +89,7 @@ maybe_kill(Agent):-
               retract(current_action(Agent, _))).
 
 choose_action(Agent, group_attack(Agent, regina)):-
+  % Communicate
 	retract(current_action(Agent,_)),
 	assertz(current_action(Agent, group_attack(Agent, regina))).
 %%	obviously this will be more fully-fledged
