@@ -107,7 +107,21 @@ agent(heather_mcnamara),
 run_turn:-
   bagof(Gossip, agent(Gossip), Agents),
   generate_action_list(ActionList, Agents),
+  (maybe_kill(Agents);true),
   execute_turn(ActionList).
+
+% Agents with 0 health DIE. or CHANGE SKOOLS.
+% OR SOMETHING!
+% BUT THEY TOTALLY LOSE!
+maybe_kill([]).
+maybe_kill([AgentsH|AgentsT]):-
+  (maybe_kill(AgentsH);true),
+  maybe_kill(AgentsT).
+maybe_kill(Agent):-
+  self_esteem(Agent, X),
+  X < 0.5 -> (retract(agent(Agent)),
+              retract(self_esteem(Agent, _)),
+              retract(current_action(Agent, _))).
 
 choose_action(Agent, group_attack(Agent, regina)):-
 	retract(current_action(Agent,_)),
