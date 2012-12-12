@@ -14,7 +14,7 @@
 :- discontiguous(agent/1, self_esteem/2, current_action/2).
 :- dynamic (agent/1, self_esteem/2, current_action/2, expectsBecause/3).
 
-:-use_module("acts.pl", "communication.pl").
+:-include("acts.pl", "communication.pl").
 
 initialize:-
   retractall(self_esteem(_, _)),
