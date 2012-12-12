@@ -54,7 +54,8 @@ agent(heather_mcnamara),
 
 run_turn:-
   bagof(Agent, agent(Agent), Agents),
-  run_communications(Agents),
+  generate_communication_list(Communiques, Agents), 
+  execute_turn(Communiques),
   generate_action_list(ActionList, Agents),
   execute_turn(ActionList),
   (maybe_kill(Agents); true),
@@ -76,6 +77,7 @@ execute_turn([]).
 execute_turn([Agent:Action|Tail]):-
 	call(Action),
 	execute_turn(Tail).
+
 % Agents with 0 health DIE. or CHANGE SKOOLS.
 % OR SOMETHING!
 % BUT THEY TOTALLY LOSE!
@@ -97,6 +99,13 @@ choose_action(Agent, group_attack(Agent, regina)):-
 %       but that's kind of the crux of the game
 %	so i'm postponing it for now
 
+
+% tell an audience of 1+ members that a proposition will happen.
+% the audience then knows to watch for its veracity
+tell(Testifier, Audience, Proposition):-
+  maplist(addToWatchList(Testifier, Proposition), Audience).
+
+addToWatchList(
 
 attack(Assailant, Victim):-
   self_esteem(Assailant, _), self_esteem(Victim, Num),
